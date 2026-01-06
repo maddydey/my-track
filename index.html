@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Мой Трекер</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { height: 100vh; width: 100vw; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        // Инициализация карты (центр на последней точке)
+        var map = L.map('map').setView([55.75, 37.61], 13); // По умолчанию Москва, заменим на твои данные
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // Сюда бот будет передавать твои координаты
+        var pathData = [
+            // Пример: [55.75, 37.61], [55.76, 37.62]
+        ];
+
+        if (pathData.length > 0) {
+            // Рисуем линию маршрута
+            var polyline = L.polyline(pathData, {color: 'blue'}).addTo(map);
+            // Ставим маркер на последнюю точку
+            L.marker(pathData[pathData.length - 1]).addTo(map)
+                .bindPopup('Я здесь!').openPopup();
+            // Подстраиваем карту под масштаб маршрута
+            map.fitBounds(polyline.getBounds());
+        }
+    </script>
+</body>
+</html>

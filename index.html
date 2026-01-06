@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Мой Трекер</title>
+    <title>Мой Маршрут</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -14,26 +14,28 @@
 <body>
     <div id="map"></div>
     <script>
-        // Инициализация карты (центр на последней точке)
-        var map = L.map('map').setView([55.75, 37.61], 13); // По умолчанию Москва, заменим на твои данные
+        // 1. Считываем координаты из ссылки (то, что прислал бот)
+        const urlParams = new URLSearchParams(window.location.search);
+        const lat = parseFloat(urlParams.get('lat'));
+        const lon = parseFloat(urlParams.get('lon'));
+
+        // 2. Если координаты есть — ставим их центром, если нет — ставим дефолт (Москва)
+        const startLat = lat || 55.75;
+        const startLon = lon || 37.61;
+
+        var map = L.map('map').setView([startLat, startLon], 16);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        // Сюда бот будет передавать твои координаты
-        var pathData = [
-            // Пример: [55.75, 37.61], [55.76, 37.62]
-        ];
-
-        if (pathData.length > 0) {
-            // Рисуем линию маршрута
-            var polyline = L.polyline(pathData, {color: 'blue'}).addTo(map);
-            // Ставим маркер на последнюю точку
-            L.marker(pathData[pathData.length - 1]).addTo(map)
-                .bindPopup('Я здесь!').openPopup();
-            // Подстраиваем карту под масштаб маршрута
-            map.fitBounds(polyline.getBounds());
+        // 3. Если координаты пришли, ставим маркер
+        if (lat && lon) {
+            L.marker([lat, lon]).addTo(map)
+                .bindPopup('Ты здесь!')
+                .openPopup();
+        } else {
+            alert("Координаты не получены. Включи трансляцию в боте!");
         }
     </script>
 </body>
